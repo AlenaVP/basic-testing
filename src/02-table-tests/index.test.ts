@@ -21,6 +21,6 @@ describe('simpleCalculator', () => {
     ({ a, b, action, expected }) => {
       const result = simpleCalculator({ a, b, action });
       expect(result).toBe(expected);
-    }
+    },
   );
 });

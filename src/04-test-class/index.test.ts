@@ -1,4 +1,9 @@
-import { getBankAccount, InsufficientFundsError, TransferFailedError, SynchronizationFailedError } from './index';
+import {
+  getBankAccount,
+  InsufficientFundsError,
+  TransferFailedError,
+  SynchronizationFailedError,
+} from './index';
 import { random } from 'lodash';
 
 jest.mock('lodash', () => ({
@@ -25,12 +30,18 @@ describe('BankAccount', () => {
 
   test('should throw InsufficientFundsError error when withdrawing more than balance', () => {
     expect(() => account.withdraw(2000)).toThrow(InsufficientFundsError);
-    expect(() => account.withdraw(2000)).toThrow(`Insufficient funds: cannot withdraw more than ${account.getBalance()}`);
+    expect(() => account.withdraw(2000)).toThrow(
+      `Insufficient funds: cannot withdraw more than ${account.getBalance()}`,
+    );
   });
 
   test('should throw error when transferring more than balance', () => {
-    expect(() => accountFrom.transfer(2000, accountTo)).toThrow(InsufficientFundsError);
-    expect(() => accountFrom.transfer(2000, accountTo)).toThrow(`Insufficient funds: cannot withdraw more than ${accountFrom.getBalance()}`);
+    expect(() => accountFrom.transfer(2000, accountTo)).toThrow(
+      InsufficientFundsError,
+    );
+    expect(() => accountFrom.transfer(2000, accountTo)).toThrow(
+      `Insufficient funds: cannot withdraw more than ${accountFrom.getBalance()}`,
+    );
   });
 
   test('should throw error when transferring to the same account', () => {
@@ -69,14 +80,21 @@ describe('BankAccount', () => {
   test('should throw SynchronizationFailedError if fetchBalance returned null', async () => {
     mockedRandom.mockReturnValueOnce(50).mockReturnValueOnce(0);
 
-    let error;
+    let error: unknown;
     try {
       await account.synchronizeBalance();
-    } catch (e: any) {
+    } catch (e) {
       error = e;
     }
 
     expect(error).toBeInstanceOf(SynchronizationFailedError);
-    expect(error.message).toBe('Synchronization failed');
+
+    if (error instanceof SynchronizationFailedError) {
+      expect((error as SynchronizationFailedError).message).toBe(
+        'Synchronization failed',
+      );
+    } else {
+      throw new Error('Unexpected error type');
+    }
   });
 });
